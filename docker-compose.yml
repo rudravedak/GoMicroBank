@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  krakend:
+    image: devopsfaith/krakend:2.4.3
+    volumes:
+      - ./krakend/krakend.json:/etc/krakend/krakend.json
+    ports:
+      - "8085:8080"
+    depends_on:
+      - customer-service
+      - card-service
+      - payment-service
+    networks:
+      - govo-network
+
+  # Customer Service
+  customer-service:
+    build:
+      context: .
+      dockerfile: docker/customer.dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=customerdb
+      - GRPC_PORT=50052
+    ports:
+      - "50052:50052"
+    depends_on:
+      - postgres
+    networks:
+      - govo-network
+
+  # Card Service
+  card-service:
+    build:
+      context: .
+      dockerfile: docker/card.dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=carddb
+      - HTTP_PORT=8081
+      - GRPC_PORT=50054
+    ports:
+      - "8081:8081"
+      - "50054:50054"
+    depends_on:
+      - postgres
+    networks:
+      - govo-network
+
+  # Payment Service
+  payment-service:
+    build:
+      context: .
+      dockerfile: docker/payment.dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=paymentdb
+      - HTTP_PORT=8080
+      - GRPC_PORT=50053
+      - KAFKA_BROKERS=kafka:9092
+    ports:
+      - "8080:8080"
+      - "50053:50053"
+    depends_on:
+      - postgres
+      - kafka
+    networks:
+      - govo-network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASES=customerdb,carddb,paymentdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh
+    networks:
+      - govo-network
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - govo-network
+
+  # Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "2181:2181"
+    networks:
+      - govo-network
+
+networks:
+  govo-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 

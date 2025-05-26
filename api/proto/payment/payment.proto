@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package payment;
+
+option go_package = "govo/api/proto/payment";
+
+import "google/protobuf/timestamp.proto";
+
+message Payment {
+    uint32 id = 1;
+    uint32 customer_id = 2;
+    uint32 card_id = 3;  // Optional, for card payments
+    double amount = 4;
+    string payment_type = 5;  // "CARD" or "CASH"
+    string status = 6;  // "PENDING", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED"
+    string description = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
+}
+
+// Create Payment
+message CreatePaymentRequest {
+    uint32 customer_id = 1;
+    uint32 card_id = 2;  // Optional
+    double amount = 3;
+    string payment_type = 4;
+    string description = 5;
+}
+
+message CreatePaymentResponse {
+    Payment payment = 1;
+}
+
+// Get Payment
+message GetPaymentRequest {
+    uint32 payment_id = 1;
+}
+
+message GetPaymentResponse {
+    Payment payment = 1;
+}
+
+// List Payments
+message ListPaymentsRequest {
+    uint32 customer_id = 1;
+    string status = 2;  // Optional filter
+    google.protobuf.Timestamp start_date = 3;  // Optional filter
+    google.protobuf.Timestamp end_date = 4;    // Optional filter
+}
+
+message ListPaymentsResponse {
+    repeated Payment payments = 1;
+}
+
+// Cancel Payment
+message CancelPaymentRequest {
+    uint32 payment_id = 1;
+    string reason = 2;
+}
+
+message CancelPaymentResponse {
+    bool success = 1;
+}
+
+service PaymentService {
+    rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse);
+    rpc GetPayment(GetPaymentRequest) returns (GetPaymentResponse);
+    rpc ListPayments(ListPaymentsRequest) returns (ListPaymentsResponse);
+    rpc CancelPayment(CancelPaymentRequest) returns (CancelPaymentResponse);
+} 

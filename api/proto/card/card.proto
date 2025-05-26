@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package card;
+
+option go_package = "govo/api/proto/card";
+
+service CardService {
+  rpc CreateCard(CreateCardRequest) returns (CreateCardResponse);
+  rpc GetCard(GetCardRequest) returns (GetCardResponse);
+  rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse);
+  rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse);
+  rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
+  rpc GetCustomerCards(GetCustomerCardsRequest) returns (GetCustomerCardsResponse);
+  rpc AddCard(AddCardRequest) returns (AddCardResponse);
+  rpc RemoveCard(RemoveCardRequest) returns (RemoveCardResponse);
+}
+
+message CreateCardRequest {
+  uint32 customer_id = 1;
+  string card_number = 2;
+  string card_type = 3;
+  string expiry_date = 4;
+  float credit_limit = 5;
+  float balance = 6;
+}
+
+message CreateCardResponse {
+  uint32 id = 1;
+  uint32 customer_id = 2;
+  string card_number = 3;
+  string card_type = 4;
+  string expiry_date = 5;
+  float credit_limit = 6;
+  float balance = 7;
+}
+
+message GetCardRequest {
+  uint32 id = 1;
+}
+
+message GetCardResponse {
+  uint32 id = 1;
+  uint32 customer_id = 2;
+  string card_number = 3;
+  string card_type = 4;
+  string expiry_date = 5;
+  float credit_limit = 6;
+  float balance = 7;
+}
+
+message UpdateCardRequest {
+  uint32 id = 1;
+  uint32 customer_id = 2;
+  string card_number = 3;
+  string card_type = 4;
+  string expiry_date = 5;
+  float credit_limit = 6;
+  float balance = 7;
+}
+
+message UpdateCardResponse {
+  uint32 id = 1;
+  uint32 customer_id = 2;
+  string card_number = 3;
+  string card_type = 4;
+  string expiry_date = 5;
+  float credit_limit = 6;
+  float balance = 7;
+}
+
+message DeleteCardRequest {
+  uint32 id = 1;
+}
+
+message DeleteCardResponse {
+  bool success = 1;
+}
+
+message ListCardsRequest {}
+
+message ListCardsResponse {
+  repeated GetCardResponse cards = 1;
+}
+
+message GetCustomerCardsRequest {
+  uint32 customer_id = 1;
+}
+
+message GetCustomerCardsResponse {
+  repeated GetCardResponse cards = 1;
+}
+
+message AddCardRequest {
+  uint32 customer_id = 1;
+  string card_number = 2;
+  string card_type = 3;
+  string expiry_date = 4;
+  string cvv = 5;
+  float credit_limit = 6;
+  float balance = 7;
+}
+
+message AddCardResponse {
+  bool success = 1;
+}
+
+message RemoveCardRequest {
+  uint32 customer_id = 1;
+  string card_number = 2;
+}
+
+message RemoveCardResponse {
+  bool success = 1;
+} 
