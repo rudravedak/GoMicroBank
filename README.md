@@ -2,7 +2,7 @@
 
 A modern banking platform that leverages Go's performance for microservices, Docker for containerization, Kubernetes for orchestration, and Kafka for real-time event streaming. Built with scalability, resilience, and cloud-native principles in mind.
 
-![Uploading untitled (14).png…]()
+![image](https://github.com/user-attachments/assets/c16d8536-2252-4b95-a221-d2fa93866264)
 
 
 
