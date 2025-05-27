@@ -31,7 +31,7 @@ This project demonstrates a scalable and resilient banking platform using:
 - Go 1.16+
 
 
-## Architecture Schema
+## Tool Architecture
 
 ![image](https://github.com/user-attachments/assets/c3fc6258-163b-4a74-b5a8-bd71cde5eabc)
 
